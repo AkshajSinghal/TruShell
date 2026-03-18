@@ -8,18 +8,14 @@ from rich.console import Console
 from rich.text import Text
 from rich.table import Table
 
-try:
-    from .alarms import AlarmManager
-    from .state import StateStore
-    from .stopwatch import Stopwatch
-    from .timezones import TimezoneManager
-    from .sound import play_alarm
-except ImportError:
-    from alarms import AlarmManager
-    from state import StateStore
-    from stopwatch import Stopwatch
-    from timezones import TimezoneManager
-    from sound import play_alarm
+from alarms import AlarmManager
+from state import StateStore
+from stopwatch import Stopwatch
+from timezones import TimezoneManager
+from sound import play_alarm
+
+from datetime import datetime
+import re
 
 app = typer.Typer(help="ChronoTerm — Type 'shell' for interactive mode or use commands directly.")
 console = Console()
@@ -70,6 +66,14 @@ chrono = ChronoTerm()
 def now():
     """Show current local time."""
     console.print(chrono.tz.now_table())
+
+@app.command()
+def time():
+    current_time = str(datetime.now())
+    current_time_unsuffix = re.sub(r"\.\d+", "", current_time)
+    current_time_unprefix = re.sub(r"....\-..\-...", "", current_time_unsuffix)
+    final_time = re.sub(r":\d\d$", "", current_time_unprefix)
+    console.print(final_time)
 
 @app.command()
 def world():
