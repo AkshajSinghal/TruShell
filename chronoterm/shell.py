@@ -8,14 +8,22 @@ from rich.console import Console
 from rich.text import Text
 from rich.table import Table
 
-from alarms import AlarmManager
-from state import StateStore
-from stopwatch import Stopwatch
-from timezones import TimezoneManager
-from sound import play_alarm
+try:
+    from .alarms import AlarmManager
+    from .state import StateStore
+    from .stopwatch import Stopwatch
+    from .timezones import TimezoneManager
+    from .sound import play_alarm
+    from .clock_ascii import clock_ascii_1
+except ImportError:
+    from alarms import AlarmManager
+    from state import StateStore
+    from stopwatch import Stopwatch
+    from timezones import TimezoneManager
+    from sound import play_alarm
+    from clock_ascii import clock_ascii_1
 
 from datetime import datetime
-import re
 
 app = typer.Typer(help="ChronoTerm — Type 'shell' for interactive mode or use commands directly.")
 console = Console()
@@ -69,50 +77,9 @@ def now():
 
 @app.command()
 def time():
-
-    clock_ascii = """
-   ___
-  |---|
-  |_|_|
-  |   |
-  |   |
-  |   |
-  |   |
-  |   |
-  |___|
- /_____\\
- |HH:MM|
- |_____|
- |.....|
- \ ___ /
-  |   |
-  |   |
-  |   |
-  | . |
-  | . |
-  | . | 
-  | . |
-  | . |
-  | . |
-  | . |
-  | . |
-  |___|
-
-    """
-
-    current_time = str(datetime.now())
-    current_time_unsuffix = re.sub(r"\.\d+", "", current_time)
-    current_time_unprefix = re.sub(r"....\-..\-...", "", current_time_unsuffix)
-    final_time = re.sub(r":\d\d$", "", current_time_unprefix)
-    
-    # console.print(final_time)
-    # console.print(clock_ascii)
-
-    hour, minutes = final_time.split(":")
-    #print(f"{hour}, {minutes}")
-
-    clock_ascii = clock_ascii.replace("HH", f"{hour}")
-    clock_ascii = clock_ascii.replace("MM", f"{minutes}")
+    """Show the current local time in ASCII clock format."""
+    hour, minutes = datetime.now().strftime("%H:%M").split(":")
+    clock_ascii = clock_ascii_1(hour, minutes)
 
     console.print(clock_ascii)
 
