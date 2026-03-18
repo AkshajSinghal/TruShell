@@ -30,6 +30,7 @@ def _atomic_write_text(path: Path, data: str) -> None:
 class AppState:
     timezones: list[str] = field(default_factory=list)
     alarms: list[dict[str, Any]] = field(default_factory=list)
+    time_template: str = "lcd"
     version: int = 1
     updated_at_iso: str | None = None
 
@@ -56,6 +57,7 @@ class StateStore:
         if isinstance(data, dict):
             tzs = data.get("timezones")
             alarms = data.get("alarms")
+            time_template = data.get("time_template")
             version = data.get("version")
             updated_at_iso = data.get("updated_at_iso")
 
@@ -63,6 +65,8 @@ class StateStore:
                 state.timezones = tzs
             if isinstance(alarms, list) and all(isinstance(x, dict) for x in alarms):
                 state.alarms = alarms  # validated by callers
+            if isinstance(time_template, str):
+                state.time_template = time_template
             if isinstance(version, int):
                 state.version = version
             if isinstance(updated_at_iso, str) or updated_at_iso is None:
@@ -77,6 +81,7 @@ class StateStore:
             "updated_at_iso": state.updated_at_iso,
             "timezones": state.timezones,
             "alarms": state.alarms,
+            "time_template": state.time_template,
         }
         _atomic_write_text(self.path, json.dumps(payload, indent=2, ensure_ascii=False))
 

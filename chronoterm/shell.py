@@ -14,14 +14,14 @@ try:
     from .stopwatch import Stopwatch
     from .timezones import TimezoneManager
     from .sound import play_alarm
-    from .clock_ascii import clock_ascii_1
+    from .clock_ascii import clock_ascii
 except ImportError:
     from alarms import AlarmManager
     from state import StateStore
     from stopwatch import Stopwatch
     from timezones import TimezoneManager
     from sound import play_alarm
-    from clock_ascii import clock_ascii_1
+    from clock_ascii import clock_ascii
 
 from datetime import datetime
 import winsound
@@ -80,10 +80,11 @@ def now():
 def time():
     """Show the current local time in ASCII clock format."""
     hour, minutes = datetime.now().strftime("%H:%M").split(":")
-    clock_ascii = clock_ascii_1(hour, minutes)
+    template_name = chrono.store.load().time_template
+    clockascii = clock_ascii(hour, minutes, template_name)
 
     winsound.Beep(1000, 1000)
-    console.print(clock_ascii)
+    console.print(clockascii)
 
 @app.command()
 def world():

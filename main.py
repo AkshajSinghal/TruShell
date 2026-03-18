@@ -1,5 +1,6 @@
 from pyfunny import joke, joke_trex
 from todocli import addtask, deletetask, updatetask, completetask, showtask
+from settings import launch_settings
 
 from chronoterm.shell import app as chronoterm_app
 
@@ -57,6 +58,8 @@ def atoffice():
         elif command == "showtasks":
             showtask()
 
+        elif command == "settings":
+            launch_settings()
 
         # Chronoterm module
         elif re.match(r"^(now|time|world|tz|alarm|sw)\b", command):
@@ -69,7 +72,7 @@ def atoffice():
 
         # additionals...
         elif command == "help":
-            print("Available commands: joke, joke_trex, \n addtask, deletetask, updatetask, completetask, showtask, \nnow, world, tz, alarm, sw, \nexit, help")
+            print("Available commands: joke, joke_trex, \n addtask, deletetask, updatetask, completetask, showtask, \nnow, time, world, tz, alarm, sw, \nsettings, exit, help")
         else:
             typer.secho(f"Unknown command: {command}", fg=typer.colors.RED)
 
