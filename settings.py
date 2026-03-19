@@ -8,14 +8,8 @@ from chronoterm.state import StateStore
 
 COMMANDS = [
     "joke",
-    "addtask",
-    "tasks",
-    "now",
     "time",
     "world",
-    "tz",
-    "alarm",
-    "sw",
 ]
 
 TIME_TEMPLATES = [
