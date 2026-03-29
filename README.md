@@ -1,12 +1,12 @@
-# Take-2
+# AtOffice-Shell
 
-Take-2 is a small Python terminal project that combines three tools in one workspace:
+AtOffice-Shell is a small Python terminal project that combines three tools in one workspace:
 
 - `PyFunny` for joke output with ASCII characters and sound effects
 - `TodoCLI` for a simple SQLite-backed task manager
 - `ChronoTerm` for time, timezone, alarm, and stopwatch commands
 
-The project also includes an `AtOffice` shell that brings these tools together into one REPL so you can run commands from a single prompt.
+The `AtOffice shell` brings these tools together into one REPL so you can run commands from a single prompt.
 
 ## Features
 
@@ -22,7 +22,7 @@ The main combined shell is launched from `main.py`. Inside it, you can:
 Prompt:
 
 ```text
-atoffice-shell
+atoffice-shell:
 ```
 
 ### 2. PyFunny
@@ -84,7 +84,7 @@ ChronoTerm settings currently support:
 From the project root:
 
 ```bash
-python main.py atoffice
+python main.py
 ```
 
 This starts the shared shell where all supported commands can be used.
@@ -99,11 +99,6 @@ python project.py
 
 This starts the dedicated ChronoTerm shell.
 
-You can also run the ChronoTerm entry file from inside the `chronoterm` folder:
-
-```bash
-python project.py
-```
 
 ## Settings Menu
 
@@ -132,40 +127,40 @@ Settings are saved to a JSON state file through ChronoTerm state storage, so cho
 
 ### Root files
 
-- [main.py](/C:/Users/conorgindia/Desktop/Take-2/main.py)
+- [main.py](main.py)
   Combined AtOffice REPL
-- [project.py](/C:/Users/conorgindia/Desktop/Take-2/project.py)
+- [project.py](project.py)
   Root entry point for ChronoTerm shell
-- [pyfunny.py](/C:/Users/conorgindia/Desktop/Take-2/pyfunny.py)
+- [pyfunny.py](pyfunny.py)
   Joke commands
-- [todocli.py](/C:/Users/conorgindia/Desktop/Take-2/todocli.py)
+- [todocli.py](todocli.py)
   Todo commands
-- [database.py](/C:/Users/conorgindia/Desktop/Take-2/database.py)
+- [database.py](database.py)
   SQLite operations for todos
-- [model.py](/C:/Users/conorgindia/Desktop/Take-2/model.py)
+- [model.py](model.py)
   Todo model
-- [settings.py](/C:/Users/conorgindia/Desktop/Take-2/settings.py)
+- [settings.py](settings.py)
   Arrow-key settings menu
-- [todos.db](/C:/Users/conorgindia/Desktop/Take-2/todos.db)
+- [todos.db](todos.db)
   SQLite database file
 
 ### ChronoTerm package
 
-- [chronoterm/shell.py](/C:/Users/conorgindia/Desktop/Take-2/chronoterm/shell.py)
+- [chronoterm/shell.py](chronoterm/shell.py)
   Main ChronoTerm commands and REPL
-- [chronoterm/timezones.py](/C:/Users/conorgindia/Desktop/Take-2/chronoterm/timezones.py)
+- [chronoterm/timezones.py](chronoterm/timezones.py)
   Timezone formatting and world time tables
-- [chronoterm/alarms.py](/C:/Users/conorgindia/Desktop/Take-2/chronoterm/alarms.py)
+- [chronoterm/alarms.py](chronoterm/alarms.py)
   Alarm management
-- [chronoterm/stopwatch.py](/C:/Users/conorgindia/Desktop/Take-2/chronoterm/stopwatch.py)
+- [chronoterm/stopwatch.py](chronoterm/stopwatch.py)
   Stopwatch logic
-- [chronoterm/state.py](/C:/Users/conorgindia/Desktop/Take-2/chronoterm/state.py)
+- [chronoterm/state.py](chronoterm/state.py)
   Persistent JSON-backed settings/state
-- [chronoterm/clock_ascii.py](/C:/Users/conorgindia/Desktop/Take-2/chronoterm/clock_ascii.py)
+- [chronoterm/clock_ascii.py](chronoterm/clock_ascii.py)
   ASCII clock templates
-- [chronoterm/sound.py](/C:/Users/conorgindia/Desktop/Take-2/chronoterm/sound.py)
+- [chronoterm/sound.py](chronoterm/sound.py)
   Alarm sound helper
-- [chronoterm/sounds](/C:/Users/conorgindia/Desktop/Take-2/chronoterm/sounds)
+- [chronoterm/sounds](chronoterm/sounds)
   Audio files used by jokes and alarms
 
 ## Dependencies
@@ -194,7 +189,7 @@ Inside `atoffice-shell`:
 ```text
 joke
 showtasks
-addtask "Finish README" "Study"
+addtask "Finish README" "Programming"
 time
 world
 tz add Europe/Dublin
