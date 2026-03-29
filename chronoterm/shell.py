@@ -27,6 +27,8 @@ from datetime import datetime
 import pytz
 import winsound
 
+#CS50.DEV
+
 app = typer.Typer(help="ChronoTerm — Type 'shell' for interactive mode or use commands directly.")
 console = Console()
 

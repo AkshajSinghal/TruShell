@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import sys
 
+#CS50.DEV
+
 def play_alarm() -> None:
     try:
         # Windows sound

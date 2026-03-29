@@ -8,6 +8,7 @@ import typer
 import re
 import shlex
 
+# COPY PASTED TO CS50.dev
 
 app = typer.Typer(help="Joke REPL: Type 'cow', 'trex', or 'exit'.")
 

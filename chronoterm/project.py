@@ -6,6 +6,7 @@ from alarms import _parse_when
 from timezones import TimezoneManager
 from state import StateStore
 
+#CS50.DEV
 
 def main() -> None:
     run_shell()

@@ -3,6 +3,7 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass, field
 
+#CS50.DEV
 
 def _fmt_seconds(total: float) -> str:
     if total < 0:

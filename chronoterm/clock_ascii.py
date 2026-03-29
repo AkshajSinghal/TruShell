@@ -1,3 +1,6 @@
+
+#CS50.DEV
+
 def clock_ascii(clock_text, template_type):
     
     if template_type == "wrist_watch":

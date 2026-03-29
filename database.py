@@ -3,6 +3,8 @@ from typing import List
 import datetime
 from model import Todo
 
+# CS50.DEV 
+
 conn = sqlite3.connect('todos.db')
 c = conn.cursor()
 

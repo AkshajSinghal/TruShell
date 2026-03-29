@@ -8,6 +8,8 @@ from playsound import playsound
 
 from chronoterm.state import StateStore
 
+#CS50.DEV
+
 app = typer.Typer(help="Joke REPL: Type 'cow', 'trex', or 'exit'.")
 
 DEFAULT_JOKE_CHARACTER = "cow"

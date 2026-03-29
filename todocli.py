@@ -4,6 +4,8 @@ from rich.table import Table
 from model import Todo
 from database import get_all_todos, delete_todo, insert_todo, complete_todo, update_todo
 
+#CS50.DEV
+
 console = Console()
 
 app = typer.Typer()

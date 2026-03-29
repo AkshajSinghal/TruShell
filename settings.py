@@ -5,6 +5,7 @@ from pathlib import Path
 
 from chronoterm.state import StateStore
 
+#CS50.DEV
 
 COMMANDS = [
     "joke",
