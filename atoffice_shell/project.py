@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import re
 import shlex
+import subprocess
+
 import typer
 
 from .pyfunny import joke, joke_trex
@@ -87,7 +89,28 @@ def _handle_chronoterm_command(raw_command: str, normalized_command: str) -> boo
     return True
 
 
+def _handle_os_fallback(raw_command: str) -> bool:
+    """Pass unrecognized commands to the host OS shell."""
+    command = raw_command.strip()
+    if not command:
+        return False
+
+    try:
+        completed = subprocess.run(command, shell=True, check=False)
+    except OSError as error:
+        typer.secho(f"OS fallback error: {error}", fg=typer.colors.RED)
+        return True
+
+    if completed.returncode != 0:
+        typer.secho(
+            f"OS fallback returned exit code {completed.returncode}",
+            fg=typer.colors.YELLOW,
+        )
+    return True
+
+
 def run_interactive_shell() -> None:
+    """Persistent REPL loop for the AtOffice shell core."""
     typer.secho("Entering AtOffice Shell. Type 'exit' to quit.", fg=typer.colors.CYAN)
 
     while True:
@@ -103,6 +126,8 @@ def run_interactive_shell() -> None:
         if local_result == "handled":
             continue
         if _handle_chronoterm_command(raw_command, command):
+            continue
+        if _handle_os_fallback(raw_command):
             continue
 
         typer.secho(f"Unknown command: {command}", fg=typer.colors.RED)
