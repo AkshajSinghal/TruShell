@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import re
 import shlex
 import subprocess
@@ -89,6 +90,32 @@ def _handle_chronoterm_command(raw_command: str, normalized_command: str) -> boo
     return True
 
 
+def _handle_cd_command(raw_command: str) -> bool:
+    """Handle cd natively so the shell's working directory changes permanently."""
+    command = raw_command.strip()
+    if not command.startswith("cd "):
+        return False
+
+    target_path = command[3:].strip() or "~"
+    expanded_target = os.path.expanduser(target_path)
+
+    try:
+        os.chdir(expanded_target)
+    except (FileNotFoundError, NotADirectoryError) as error:
+        typer.secho(f"cd: {target_path}: {error}", fg=typer.colors.RED)
+        return True
+    except OSError as error:
+        typer.secho(f"cd: {target_path}: {error}", fg=typer.colors.RED)
+        return True
+
+    try:
+        subprocess.run("ls", shell=True, check=False)
+    except OSError as error:
+        typer.secho(f"ls fallback error: {error}", fg=typer.colors.RED)
+
+    return True
+
+
 def _handle_os_fallback(raw_command: str) -> bool:
     """Pass unrecognized commands to the host OS shell."""
     command = raw_command.strip()
@@ -126,6 +153,8 @@ def run_interactive_shell() -> None:
         if local_result == "handled":
             continue
         if _handle_chronoterm_command(raw_command, command):
+            continue
+        if _handle_cd_command(raw_command):
             continue
         if _handle_os_fallback(raw_command):
             continue

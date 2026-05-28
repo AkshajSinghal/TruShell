@@ -3,7 +3,7 @@ from types import SimpleNamespace
 from typer.testing import CliRunner
 
 from atoffice_shell.cli import app
-from atoffice_shell.project import _handle_os_fallback
+from atoffice_shell.project import _handle_cd_command, _handle_os_fallback
 
 
 runner = CliRunner()
@@ -34,3 +34,22 @@ def test_unknown_command_uses_os_fallback(monkeypatch) -> None:
 
     assert _handle_os_fallback("pwd") is True
     assert calls == {"command": "pwd", "shell": True, "check": False}
+
+
+def test_cd_command_changes_directory_and_runs_ls(monkeypatch) -> None:
+    calls = {}
+
+    def fake_chdir(path: str) -> None:
+        calls["chdir"] = path
+
+    def fake_run(command: str, shell: bool, check: bool) -> SimpleNamespace:
+        calls["ls_command"] = command
+        calls["ls_shell"] = shell
+        calls["ls_check"] = check
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr("atoffice_shell.project.os.chdir", fake_chdir)
+    monkeypatch.setattr("atoffice_shell.project.subprocess.run", fake_run)
+
+    assert _handle_cd_command("cd /tmp") is True
+    assert calls == {"chdir": "/tmp", "ls_command": "ls", "ls_shell": True, "ls_check": False}
