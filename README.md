@@ -2,7 +2,7 @@
 
 AtOffice Shell is a polished open-source Python CLI that combines jokes, todos, alarms, world clocks, and a productivity-focused terminal shell.
 
-
+# Hello!
 ## Key Features
 
 - Unified CLI: `atoffice-shell` starts a single interactive shell for jokes, todos, and ChronoTerm.

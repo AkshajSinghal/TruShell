@@ -72,7 +72,8 @@ class AtonEditor(App):
         yield Footer()
 
     def on_mount(self) -> None:
-        self.text_area.focus()
+        text_area = self.query_one("#editor_text_area", TextArea)
+        text_area.focus()
 
     def action_save_file(self) -> None:
         text_area = self.query_one("#editor_text_area", TextArea)
