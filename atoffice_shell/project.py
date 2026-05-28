@@ -19,10 +19,19 @@ HELP_TEXT = (
 )
 
 
-def _prompt_command() -> tuple[str, str]:
+def _split_command(user_input: str) -> tuple[str, str]:
+    parts = user_input.strip().split(maxsplit=1)
+    if not parts:
+        return "", ""
+    command = parts[0].lower()
+    argument = parts[1] if len(parts) > 1 else ""
+    return command, argument
+
+
+def _prompt_command() -> tuple[str, str, str]:
     raw_command = typer.prompt("atoffice-shell").strip()
-    normalized_command = raw_command.lower()
-    return raw_command, normalized_command
+    command, argument = _split_command(raw_command)
+    return raw_command, command, argument
 
 
 def _handle_joke_command(command: str) -> bool:
@@ -63,7 +72,14 @@ def _handle_todo_command(command: str) -> bool:
     return False
 
 
-def _handle_local_command(command: str) -> str:
+def _handle_local_command(command: str, argument: str) -> str:
+    if command == "addtask" and not argument:
+        typer.secho(
+            '⚠️ Missing arguments. Syntax: addtask "task-name" "category"',
+            fg=typer.colors.YELLOW,
+        )
+        return "handled"
+
     if command in {"exit", "quit"}:
         return "exit"
     if _handle_joke_command(command):
@@ -92,26 +108,23 @@ def _handle_chronoterm_command(raw_command: str, normalized_command: str) -> boo
 
 def _handle_cd_command(raw_command: str) -> bool:
     """Handle cd natively so the shell's working directory changes permanently."""
-    command = raw_command.strip()
-    if not command.startswith("cd "):
+    command, argument = _split_command(raw_command)
+    if command != "cd":
         return False
 
-    target_path = command[3:].strip() or "~"
-    expanded_target = os.path.expanduser(target_path)
-
-    try:
-        os.chdir(expanded_target)
-    except (FileNotFoundError, NotADirectoryError) as error:
-        typer.secho(f"cd: {target_path}: {error}", fg=typer.colors.RED)
-        return True
-    except OSError as error:
-        typer.secho(f"cd: {target_path}: {error}", fg=typer.colors.RED)
+    if not argument.strip():
+        typer.secho("Syntax: cd <directory_path>", fg=typer.colors.YELLOW)
         return True
 
+    target = os.path.expanduser(argument)
+
     try:
-        subprocess.run("ls", shell=True, check=False)
+        os.chdir(target)
+        subprocess.run("ls", shell=True, check=False, cwd=os.getcwd())
+    except (FileNotFoundError, NotADirectoryError, PermissionError) as error:
+        typer.secho(f"❌ Cannot navigate: {error}", fg=typer.colors.RED)
     except OSError as error:
-        typer.secho(f"ls fallback error: {error}", fg=typer.colors.RED)
+        typer.secho(f"❌ Cannot navigate: {error}", fg=typer.colors.RED)
 
     return True
 
@@ -123,16 +136,14 @@ def _handle_os_fallback(raw_command: str) -> bool:
         return False
 
     try:
-        completed = subprocess.run(command, shell=True, check=False)
-    except OSError as error:
+        completed = subprocess.run(command, shell=True, check=False, cwd=os.getcwd())
+    except (OSError, subprocess.SubprocessError) as error:
+        typer.secho("❓ Command not recognized by ATON shell or your host OS.", fg=typer.colors.YELLOW)
         typer.secho(f"OS fallback error: {error}", fg=typer.colors.RED)
         return True
 
     if completed.returncode != 0:
-        typer.secho(
-            f"OS fallback returned exit code {completed.returncode}",
-            fg=typer.colors.YELLOW,
-        )
+        typer.secho("❓ Command not recognized by ATON shell or your host OS.", fg=typer.colors.YELLOW)
     return True
 
 
@@ -142,12 +153,12 @@ def run_interactive_shell() -> None:
 
     while True:
         try:
-            raw_command, command = _prompt_command()
+            raw_command, command, argument = _prompt_command()
         except (KeyboardInterrupt, EOFError):
             typer.echo("")
             break
 
-        local_result = _handle_local_command(command)
+        local_result = _handle_local_command(command, argument)
         if local_result == "exit":
             break
         if local_result == "handled":
