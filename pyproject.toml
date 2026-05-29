@@ -1,5 +1,5 @@
 [project]
-name = "at-office-shell"
+name = "trushell"
 version = "0.1.0"
 description = "A polished productivity CLI shell with jokes, todos, and ChronoTerm features."
 readme = "README.md"
@@ -32,29 +32,27 @@ dependencies = [
 ]
 
 [project.urls]
-Home = "https://github.com/AkshajSinghal/at-office-shell"
-Repository = "https://github.com/AkshajSinghal/at-office-shell"
-Documentation = "https://github.com/AkshajSinghal/at-office-shell#readme"
-"Bug Tracker" = "https://github.com/AkshajSinghal/at-office-shell/issues"
+Home = "https://github.com/AkshajSinghal/trushell"
+Repository = "https://github.com/AkshajSinghal/trushell"
+Documentation = "https://github.com/AkshajSinghal/trushell#readme"
+"Bug Tracker" = "https://github.com/AkshajSinghal/trushell/issues"
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0.0", "ruff>=0.0.280", "black>=24.10.0"]
 
 [project.scripts]
-atoffice-shell = "atoffice_shell.cli:app"
-at-office-shell = "atoffice_shell.cli:app_with_lower"
-truos = "atoffice_shell.cli:app_with_lower"
-trushell = "atoffice_shell.cli:app_with_lower"
-TRUOS = "atoffice_shell.cli:app_with_lower"
-TRUSHELL = "atoffice_shell.cli:app_with_lower"
+trushell = "trushell.cli:app_with_lower"
+truos = "trushell.cli:app_with_lower"
+TRUSHELL = "trushell.cli:app_with_lower"
+TRUOS = "trushell.cli:app_with_lower"
 
 [build-system]
 requires = ["hatchling>=1.22.0"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build]
-packages = ["atoffice_shell"]
-include = ["README.md", "LICENSE", "atoffice_shell/chronoterm/sounds/*"]
+packages = ["trushell"]
+include = ["README.md", "LICENSE", "trushell/chronoterm/sounds/*"]
 
 [tool.ruff]
 line-length = 88

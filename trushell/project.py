@@ -38,8 +38,8 @@ def _prompt_command() -> tuple[str, str, str]:
     return raw_command, command, argument
 
 
-class AtonEditor(App):
-    """Simple full-screen text editor for ATON shell files."""
+class TruShellEditor(App):
+    """Simple full-screen text editor for TruShell files."""
 
     inherit_bindings = True
 
@@ -138,7 +138,7 @@ def _handle_edit_command(raw_command: str) -> bool:
     initial_text = file_path.read_text(encoding="utf-8") if file_path.exists() else ""
 
     try:
-        AtonEditor(str(file_path), initial_text=initial_text).run()
+        TruShellEditor(str(file_path), initial_text=initial_text).run()
     except Exception as error:
         typer.secho(f"Editor error: {error}", fg=typer.colors.RED)
 
@@ -211,18 +211,18 @@ def _handle_os_fallback(raw_command: str) -> bool:
     try:
         completed = subprocess.run(command, shell=True, check=False, cwd=os.getcwd())
     except (OSError, subprocess.SubprocessError) as error:
-        typer.secho("❓ Command not recognized by ATON shell or your host OS.", fg=typer.colors.YELLOW)
+        typer.secho("❓ Command not recognized by TruShell or your host OS.", fg=typer.colors.YELLOW)
         typer.secho(f"OS fallback error: {error}", fg=typer.colors.RED)
         return True
 
     if completed.returncode != 0:
-        typer.secho("❓ Command not recognized by ATON shell or your host OS.", fg=typer.colors.YELLOW)
+        typer.secho("❓ Command not recognized by TruShell or your host OS.", fg=typer.colors.YELLOW)
     return True
 
 
 def run_interactive_shell() -> None:
-    """Persistent REPL loop for the AtOffice shell core."""
-    typer.secho("Entering AtOffice Shell. Type 'exit' to quit.", fg=typer.colors.CYAN)
+    """Persistent REPL loop for the TruShell core."""
+    typer.secho("Entering TruShell. Type 'exit' to quit.", fg=typer.colors.CYAN)
 
     while True:
         try:

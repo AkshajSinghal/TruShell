@@ -1,6 +1,6 @@
-from atoffice_shell.chronoterm.state import default_state_path
+from trushell.chronoterm.state import default_state_path
 
 
 def test_default_state_path_contains_app_folder() -> None:
     path = default_state_path()
-    assert "AtOfficeShell" in str(path)
+    assert "TruShell" in str(path)

@@ -29,7 +29,7 @@ jobs:
         run: python -m pytest
       - name: Check CLI help
         run: |
-          python -m atoffice_shell --help
-          atoffice-shell --help
+          python -m trushell --help
+          trushell --help
       - name: Build wheel
         run: python -m build --wheel

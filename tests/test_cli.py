@@ -3,8 +3,8 @@ from types import SimpleNamespace
 
 from typer.testing import CliRunner
 
-from atoffice_shell.cli import app
-from atoffice_shell.project import AtonEditor, _handle_cd_command, _handle_edit_command, _handle_local_command, _handle_os_fallback
+from trushell.cli import app
+from trushell.project import TruShellEditor, _handle_cd_command, _handle_edit_command, _handle_local_command, _handle_os_fallback
 
 
 runner = CliRunner()
@@ -32,7 +32,7 @@ def test_unknown_command_uses_os_fallback(monkeypatch) -> None:
         calls["cwd"] = cwd
         return SimpleNamespace(returncode=0)
 
-    monkeypatch.setattr("atoffice_shell.project.subprocess.run", fake_run)
+    monkeypatch.setattr("trushell.project.subprocess.run", fake_run)
 
     assert _handle_os_fallback("pwd") is True
     assert calls == {"command": "pwd", "shell": True, "check": False, "cwd": os.getcwd()}
@@ -51,8 +51,8 @@ def test_cd_command_changes_directory_and_runs_ls(monkeypatch) -> None:
         calls["ls_cwd"] = cwd
         return SimpleNamespace(returncode=0)
 
-    monkeypatch.setattr("atoffice_shell.project.os.chdir", fake_chdir)
-    monkeypatch.setattr("atoffice_shell.project.subprocess.run", fake_run)
+    monkeypatch.setattr("trushell.project.os.chdir", fake_chdir)
+    monkeypatch.setattr("trushell.project.subprocess.run", fake_run)
 
     assert _handle_cd_command("cd /tmp") is True
     assert calls == {"chdir": "/tmp", "ls_command": "ls", "ls_shell": True, "ls_check": False, "ls_cwd": os.getcwd()}
@@ -69,9 +69,9 @@ def test_cd_without_target_prints_syntax_hint(monkeypatch) -> None:
         calls["ls_cwd"] = cwd
         return SimpleNamespace(returncode=0)
 
-    monkeypatch.setattr("atoffice_shell.project.os.path.expanduser", lambda path: "/home/test")
-    monkeypatch.setattr("atoffice_shell.project.os.chdir", fake_chdir)
-    monkeypatch.setattr("atoffice_shell.project.subprocess.run", fake_run)
+    monkeypatch.setattr("trushell.project.os.path.expanduser", lambda path: "/home/test")
+    monkeypatch.setattr("trushell.project.os.chdir", fake_chdir)
+    monkeypatch.setattr("trushell.project.subprocess.run", fake_run)
 
     assert _handle_cd_command("cd") is True
     assert calls == {}
@@ -81,7 +81,7 @@ def test_addtask_missing_arguments_is_blocked(monkeypatch) -> None:
     messages = []
 
     monkeypatch.setattr(
-        "atoffice_shell.project.typer.secho",
+        "trushell.project.typer.secho",
         lambda message, fg=None: messages.append((message, fg)),
     )
 
@@ -92,7 +92,7 @@ def test_edit_requires_filename(monkeypatch) -> None:
     messages = []
 
     monkeypatch.setattr(
-        "atoffice_shell.project.typer.secho",
+        "trushell.project.typer.secho",
         lambda message, fg=None: messages.append((message, fg)),
     )
 
@@ -114,24 +114,24 @@ def test_edit_launches_editor_for_existing_file(monkeypatch, tmp_path) -> None:
         def run(self) -> None:
             calls["ran"] = True
 
-    monkeypatch.setattr("atoffice_shell.project.AtonEditor", FakeEditor)
+    monkeypatch.setattr("trushell.project.TruShellEditor", FakeEditor)
 
     assert _handle_edit_command(f"edit {file_path}") is True
     assert calls == {"filename": str(file_path), "initial_text": "hello", "ran": True}
 
 
-def test_aton_editor_uses_initial_text_without_re_reading_file(tmp_path) -> None:
+def test_trushell_editor_uses_initial_text_without_re_reading_file(tmp_path) -> None:
     file_path = tmp_path / "note.txt"
     file_path.write_text("from-disk", encoding="utf-8")
 
-    editor = AtonEditor(str(file_path), initial_text="from-arg")
+    editor = TruShellEditor(str(file_path), initial_text="from-arg")
 
     assert editor.file_content == "from-arg"
 
 
 def test_action_save_file_notifies_on_permission_error(monkeypatch, tmp_path) -> None:
     file_path = tmp_path / "readonly.txt"
-    editor = AtonEditor(str(file_path), initial_text="draft")
+    editor = TruShellEditor(str(file_path), initial_text="draft")
 
     notifications = []
 

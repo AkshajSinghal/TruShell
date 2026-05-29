@@ -11,7 +11,7 @@ from .settings import launch_settings
 from .todocli import addtask, completetask, deletetask, showtask, updatetask
 from .chronoterm.shell import app as chronoterm_app
 
-app = typer.Typer(name="atoffice-shell", help="AtOffice Shell: jokes, todos, time, and more.")
+app = typer.Typer(name="trushell", help="TruShell: jokes, todos, time, and more.")
 
 def app_with_lower() -> None:
     """Entry point that normalizes command name to lowercase for case-insensitive invocation."""
@@ -32,14 +32,14 @@ def _invoke_chronoterm_command(command: str) -> None:
 
 @app.callback(invoke_without_command=True)
 def main(ctx: typer.Context) -> None:
-    """Launch the AtOffice Shell interactive REPL when no command is provided."""
+    """Launch the TruShell interactive REPL when no command is provided."""
     if ctx.invoked_subcommand is None:
         run_interactive_shell()
 
 
 @app.command("version")
 def version() -> None:
-    """Show the installed AtOffice Shell version."""
+    """Show the installed TruShell version."""
     typer.echo(__version__)
 
 

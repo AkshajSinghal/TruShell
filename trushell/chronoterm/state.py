@@ -10,7 +10,7 @@ from platformdirs import user_config_dir
 
 
 def default_state_path() -> Path:
-    return Path(user_config_dir("AtOfficeShell", "AkshajSinghal")) / "state.json"
+    return Path(user_config_dir("TruShell", "AkshajSinghal")) / "state.json"
 
 
 @dataclass

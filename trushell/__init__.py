@@ -1,4 +1,4 @@
-"""AtOffice Shell package."""
+"""TruShell package."""
 
 __all__ = ["__version__"]
 

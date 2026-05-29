@@ -1,4 +1,4 @@
-# Contributing to AtOffice Shell
+# Contributing to TruShell
 
 Thank you for your interest in contributing! This project follows an open and collaborative workflow.
 
