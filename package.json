@@ -1,6 +1,6 @@
 {
   "name": "@truos/trushell",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "TruShell - A modern terminal-based operating workspace interface",
   "main": "bin/index.js",
   "type": "commonjs",
