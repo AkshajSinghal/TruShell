@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import shlex
-
+import sys
 import typer
 
 from . import __version__
@@ -13,6 +13,13 @@ from .chronoterm.shell import app as chronoterm_app
 
 app = typer.Typer(name="atoffice-shell", help="AtOffice Shell: jokes, todos, time, and more.")
 
+def app_with_lower() -> None:
+    """Entry point that normalizes command name to lowercase for case-insensitive invocation."""
+    # Normalize the command name to lowercase for case-insensitive behavior
+    if len(sys.argv) > 0:
+        sys.argv[0] = sys.argv[0].lower()
+    # Invoke the main Typer app
+    app()
 
 def _invoke_chronoterm_command(command: str) -> None:
     try:

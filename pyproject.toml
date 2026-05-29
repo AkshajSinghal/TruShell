@@ -42,6 +42,11 @@ dev = ["pytest>=8.0.0", "ruff>=0.0.280", "black>=24.10.0"]
 
 [project.scripts]
 atoffice-shell = "atoffice_shell.cli:app"
+at-office-shell = "atoffice_shell.cli:app_with_lower"
+truos = "atoffice_shell.cli:app_with_lower"
+trushell = "atoffice_shell.cli:app_with_lower"
+TRUOS = "atoffice_shell.cli:app_with_lower"
+TRUSHELL = "atoffice_shell.cli:app_with_lower"
 
 [build-system]
 requires = ["hatchling>=1.22.0"]
