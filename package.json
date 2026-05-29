@@ -2,7 +2,7 @@
   "name": "@truos/trushell",
   "version": "1.0.0",
   "description": "TruShell - A modern terminal-based operating workspace interface",
-  "main": "index.js",
+  "main": "bin/index.js",
   "type": "commonjs",
   "directories": {
     "test": "tests"
@@ -13,14 +13,14 @@
   "bin": {
     "truos": "./bin/index.js",
     "trushell": "./bin/index.js",
+    "atoffice-shell": "./bin/index.js",
     "TruOS": "./bin/index.js"
   },
   "files": [
     "bin/",
-    "src/",
-    "index.js",
-    "requirements.txt",
-    "README.md"
+    "trushell/",
+    "README.md",
+    "LICENSE"
   ],
   "repository": {
     "type": "git",
