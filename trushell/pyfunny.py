@@ -5,9 +5,9 @@ from pathlib import Path
 import cowsay
 import pyjokes
 import typer
-from playsound import playsound
 
 from .chronoterm.state import StateStore
+from .chronoterm.sound import play_alarm
 
 DEFAULT_JOKE_CHARACTER = "cow"
 DEFAULT_JOKE_SOUND = "cow-sound.mp3"
@@ -19,12 +19,17 @@ def _sound_path(filename: str) -> Path:
 
 def _play_sound(filename: str) -> None:
     sound_path = _sound_path(filename)
+    
     if not sound_path.exists():
         typer.secho(f"Sound file missing: {sound_path}", fg=typer.colors.YELLOW)
         return
 
+    # Note: Your play_alarm() currently plays a system beep/tone.
+    # If you want it to play specific MP3s, you'd need to update play_alarm 
+    # to accept a file path. For now, this just triggers the alarm sound 
+    # as a notification that a joke is coming.
     try:
-        playsound(str(sound_path))
+        play_alarm()
     except Exception:
         typer.secho("Unable to play sound. Continuing without audio.", fg=typer.colors.YELLOW)
 
