@@ -1,10 +1,18 @@
 import os
+import subprocess
 from types import SimpleNamespace
 
 from typer.testing import CliRunner
 
 from trushell.cli import app
-from trushell.project import TruShellEditor, _handle_cd_command, _handle_edit_command, _handle_local_command, _handle_os_fallback
+from trushell.project import (
+    TruShellEditor,
+    _handle_cd_command,
+    _handle_edit_command,
+    _handle_local_command,
+    _handle_os_fallback,
+    _run_external_command,
+)
 
 
 runner = CliRunner()
@@ -25,17 +33,63 @@ def test_help_shows_usage() -> None:
 def test_unknown_command_uses_os_fallback(monkeypatch) -> None:
     calls = {}
 
-    def fake_run(command: str, shell: bool, check: bool, cwd: str) -> SimpleNamespace:
+    def fake_run(command: str, shell: bool, check: bool, cwd: str) -> subprocess.CompletedProcess[str]:
         calls["command"] = command
         calls["shell"] = shell
         calls["check"] = check
         calls["cwd"] = cwd
-        return SimpleNamespace(returncode=0)
+        return subprocess.CompletedProcess(args=command, returncode=0)
 
-    monkeypatch.setattr("trushell.project.subprocess.run", fake_run)
+    monkeypatch.setattr("trushell.project._run_external_command", fake_run)
 
     assert _handle_os_fallback("pwd") is True
     assert calls == {"command": "pwd", "shell": True, "check": False, "cwd": os.getcwd()}
+
+
+def test_run_external_command_profiles_resources(monkeypatch) -> None:
+    calls = {}
+    stats = []
+
+    class FakePopen:
+        def __init__(self, command: str, shell: bool, cwd: str | None = None) -> None:
+            calls["command"] = command
+            calls["shell"] = shell
+            calls["cwd"] = cwd
+            self.pid = 123
+            self.returncode = None
+            self._first = True
+
+        def wait(self, timeout: float | None = None) -> int:
+            if self._first:
+                self._first = False
+                raise subprocess.TimeoutExpired(cmd="echo hi", timeout=timeout)
+            self.returncode = 5
+            return 5
+
+    class FakeProcess:
+        def __init__(self, pid: int) -> None:
+            self.pid = pid
+            self._count = 0
+
+        def cpu_percent(self, interval=None) -> float:
+            self._count += 1
+            return 8.2 if self._count > 1 else 0.0
+
+        def memory_info(self):
+            return SimpleNamespace(rss=45 * 1024 * 1024)
+
+    monkeypatch.setattr("trushell.project.subprocess.Popen", FakePopen)
+    monkeypatch.setattr("trushell.project.psutil.Process", FakeProcess)
+    monkeypatch.setattr(
+        "trushell.project.typer.secho",
+        lambda message, fg=None: stats.append((message, fg)),
+    )
+
+    result = _run_external_command("echo hi", shell=True, check=False, cwd="/tmp")
+
+    assert result.returncode == 5
+    assert calls == {"command": "echo hi", "shell": True, "cwd": "/tmp"}
+    assert stats and "CPU peak" in stats[0][0] and "RAM peak" in stats[0][0]
 
 
 def test_cd_command_changes_directory_and_runs_ls(monkeypatch) -> None:
@@ -52,7 +106,7 @@ def test_cd_command_changes_directory_and_runs_ls(monkeypatch) -> None:
         return SimpleNamespace(returncode=0)
 
     monkeypatch.setattr("trushell.project.os.chdir", fake_chdir)
-    monkeypatch.setattr("trushell.project.subprocess.run", fake_run)
+    monkeypatch.setattr("trushell.project._run_external_command", fake_run)
 
     assert _handle_cd_command("cd /tmp") is True
     assert calls == {"chdir": "/tmp", "ls_command": "ls", "ls_shell": True, "ls_check": False, "ls_cwd": os.getcwd()}

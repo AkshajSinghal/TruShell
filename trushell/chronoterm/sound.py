@@ -1,6 +1,8 @@
 from __future__ import annotations
-import sys
 import os
+import sys
+import shutil
+import subprocess
 
 
 def play_alarm() -> None:
@@ -12,20 +14,29 @@ def play_alarm() -> None:
             winsound.Beep(900, 400)
         
         elif sys.platform == "darwin":
-            os.system("afplay /System/Library/Sounds/Glass.aiff > /dev/null 2>&1")
+            subprocess.run(
+                ["afplay", "/System/Library/Sounds/Glass.aiff"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=False,
+            )
         
         else:  # Linux/Unix
-            # Try various sound systems
             for cmd in [
-                "paplay /usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga &",
-                "aplay /usr/share/sounds/alsa/Front_Center.wav &",
-                "canberra-gtk-play --id='alarm-clock-elapsed' &",
+                ["paplay", "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"],
+                ["aplay", "/usr/share/sounds/alsa/Front_Center.wav"],
+                ["canberra-gtk-play", "--id=alarm-clock-elapsed"],
             ]:
-                if os.system(f"which {cmd.split()[0]} > /dev/null 2>&1") == 0:
-                    os.system(cmd)
-                    return
+                if shutil.which(cmd[0]):
+                    result = subprocess.run(
+                        cmd,
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL,
+                        check=False,
+                    )
+                    if result.returncode == 0:
+                        return
             
-            # Fallback to terminal bell
             sys.stdout.write("\007" * 3)
             sys.stdout.flush()
     

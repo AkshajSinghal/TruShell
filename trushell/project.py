@@ -4,6 +4,7 @@ import os
 import re
 import shlex
 import subprocess
+import time
 from pathlib import Path
 
 import typer
@@ -15,6 +16,11 @@ from .pyfunny import joke, joke_trex
 from .settings import launch_settings
 from .todocli import addtask, delete_todo, update_todo, complete_todo, showtask
 from .chronoterm.shell import app as chronoterm_app
+
+try:
+    import psutil
+except ImportError:  # pragma: no cover
+    psutil = None
 
 HELP_TEXT = (
     "Available commands: joke, joke_trex, "
@@ -36,6 +42,55 @@ def _prompt_command() -> tuple[str, str, str]:
     raw_command = input("trushell ❯ ").strip()
     command, argument = _split_command(raw_command)
     return raw_command, command, argument
+
+
+def _run_external_command(
+    command: str,
+    shell: bool = True,
+    check: bool = False,
+    cwd: str | None = None,
+) -> subprocess.CompletedProcess[str]:
+    if psutil is None:
+        return subprocess.run(command, shell=shell, check=check, cwd=cwd)
+
+    process = subprocess.Popen(command, shell=shell, cwd=cwd)
+    monitor = psutil.Process(process.pid)
+    monitor.cpu_percent(None)
+    peak_rss = 0
+    peak_cpu = 0.0
+    start = time.perf_counter()
+
+    while True:
+        try:
+            process.wait(timeout=0.05)
+            break
+        except subprocess.TimeoutExpired:
+            try:
+                peak_rss = max(peak_rss, monitor.memory_info().rss)
+                peak_cpu = max(peak_cpu, monitor.cpu_percent(None))
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                break
+
+    if process.returncode is None:
+        process.wait()
+
+    try:
+        peak_rss = max(peak_rss, monitor.memory_info().rss)
+        peak_cpu = max(peak_cpu, monitor.cpu_percent(None))
+    except (psutil.NoSuchProcess, psutil.AccessDenied):
+        pass
+
+    elapsed = time.perf_counter() - start
+    if peak_rss or peak_cpu:
+        typer.secho(
+            f"🧪 {elapsed:.2f}s  CPU peak {peak_cpu:.1f}%  RAM peak {peak_rss / 1024**2:.1f} MiB",
+            fg=typer.colors.GREEN,
+        )
+
+    if check and process.returncode not in (None, 0):
+        raise subprocess.CalledProcessError(process.returncode, command)
+
+    return subprocess.CompletedProcess(args=command, returncode=process.returncode)
 
 
 class TruShellEditor(App):
@@ -193,7 +248,7 @@ def _handle_cd_command(raw_command: str) -> bool:
 
     try:
         os.chdir(target)
-        subprocess.run("ls", shell=True, check=False, cwd=os.getcwd())
+        _run_external_command("ls", shell=True, check=False, cwd=os.getcwd())
     except (FileNotFoundError, NotADirectoryError, PermissionError) as error:
         typer.secho(f"❌ Cannot navigate: {error}", fg=typer.colors.RED)
     except OSError as error:
@@ -209,7 +264,7 @@ def _handle_os_fallback(raw_command: str) -> bool:
         return False
 
     try:
-        completed = subprocess.run(command, shell=True, check=False, cwd=os.getcwd())
+        completed = _run_external_command(command, shell=True, check=False, cwd=os.getcwd())
     except (OSError, subprocess.SubprocessError) as error:
         typer.secho("❓ Command not recognized by TruShell or your host OS.", fg=typer.colors.YELLOW)
         typer.secho(f"OS fallback error: {error}", fg=typer.colors.RED)
