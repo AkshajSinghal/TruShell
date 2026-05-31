@@ -1,31 +1,32 @@
 # 🐄 TruShell
 
-> **A modern, Linux-native productivity shell that integrates seamlessly with your workflow**
+TruShell is a small productivity shell for people who want task tracking and time
+tools next to ordinary terminal commands. It is not meant to replace bash, zsh,
+fish, or PowerShell; it sits beside them and handles the lightweight workflow
+bits that are easy to forget during a coding session.
 
-TruShell is not just another terminal—it's a **productivity powerhouse** that combines task management, time utilities, jokes for breaks, and a native shell experience. Built for developers who want to stay in flow without switching contexts.
+## What It Does
 
-## Why TruShell?
+- Keeps todos in SQLite with stable display positions.
+- Shows local time, world clocks, alarms, and a stopwatch through ChronoTerm.
+- Falls back to host operating-system commands when a command is not handled by
+  TruShell.
+- Opens a Textual editor for quick file edits from the REPL.
+- Supports short joke breaks with configurable cowsay characters and optional
+  local sound files.
 
-- **All-in-one workspace** - Tasks, time, alarms, and shell in one place
-- **Beautiful prompts** - Customizable `trushell ❯` prompt with ASCII art
--  **Linux-first design** - Respects Unix philosophy, works alongside bash/zsh/fish
-- **Persistent state** - SQLite-backed todos and settings survive restarts
-- **Fun breaks** - Cow/T-Rex jokes with sound effects when you need a laugh
-- **Global awareness** - World clocks, timezone manager, alarms, stopwatch
-- **Built-in editor** - Quick file editing without leaving the shell
+## Install
 
-## Installation
-
-### Using pip (Recommended)
-```
+```bash
 pip install trushell
 ```
 
-### From Source
+For local development:
+
 ```bash
 git clone https://github.com/AkshajSinghal/trushell.git
-cd at-office-shell
-pip install -e .
+cd trushell
+pip install -e ".[dev]"
 ```
 
 ## Quick Start
@@ -33,202 +34,114 @@ pip install -e .
 ```bash
 $ trushell
 Entering TruShell. Type 'exit' to quit.
-trushell ❯ help
+trushell> help
 Available commands: joke, joke_trex, addtask, deletetask, updatetask, completetask, showtask, now, time, world, tz, alarm, sw, settings, exit, help
 
-trushell ❯ addtask "Review PR" "Work"
+trushell> addtask "Review PR" "Work"
 Task added.
 
-trushell ❯ showtasks
-Todos 💻
-┏━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┓
- # ┃ Todo         ┃ Category ┃ Done   ┃
-┡━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━┩
-│ 1 │ Review PR    │ Work     │ ❌     │
-└───┴──────────────┴──────────┴────────┘
+trushell> showtasks
+Todos
+ #    Todo                 Category      Done
+ 1    Review PR            Work          open
 
-trushell ❯ time
-  __
- / _)
-/_)_
- /_)
+trushell> time
+             ___________________
+            |  _______________  |
+            | |     14:30     | |
+            | |_______________| |
+            |  ___ ___ ___ ___  |
+            |_|___|___|___|___|_|
 
-trushell ❯ joke
- _________________________
-< Your Python code works! >
- -------------------------
-        \   ^__^
-         \  (oo)\_______
-            (__)\       )\/\
-                ||----w |
-                ||     ||
-
-trushell ❯ ls -la  # Native OS commands work too!
-total 48
-drwxr-xr-x  5 user user 4096 May 29 10:30 .
-...
+trushell> ls
 ```
 
-## Command Reference
+## Commands
 
-###  Fun & Breaks
-| Command | Description | Example |
-|---------|-------------|---------|
-| `joke` | Random joke with ASCII cow | `joke` |
-| `joke-trex` | T-Rex joke with sound | `joke-trex` |
+### Todo
 
-### Task Management
-| Command | Description | Example |
-|---------|-------------|---------|
-| `addtask "<task>" "<category>"` | Add a new todo | `addtask "Fix bug" "Dev"` |
-| `deletetask <position>` | Delete task by number | `deletetask 2` |
-| `updatetask <pos> "<task>" "<cat>"` | Update task text/category | `updatetask 1 "New text" "Cat"` |
-| `completetask <position>` | Mark task as done | `completetask 1` |
-| `showtasks` | Display all tasks | `showtasks` |
+| Command | Description |
+| --- | --- |
+| `addtask "<task>" "<category>"` | Add a new todo. |
+| `deletetask <position>` | Delete by the number shown in `showtasks`. |
+| `updatetask <position> "<task>" "<category>"` | Update task text and category. |
+| `completetask <position>` | Mark a task as done. |
+| `showtasks` | Print the current todo list. |
 
-###  Time & Productivity
-| Command | Description | Example |
-|---------|-------------|---------|
-| `now` | Current local time | `now` |
-| `time` | ASCII clock display | `time` |
-| `world` | Show favorite timezones | `world` |
-| `tz list` | List saved timezones | `tz list` |
-| `tz add <IANA>` | Add timezone | `tz add Europe/London` |
-| `tz remove <name>` | Remove timezone | `tz remove London` |
-| `alarm list` | List alarms | `alarm list` |
-| `alarm add "<HH:MM>" --label "X"` | Set alarm | `alarm add "07:30" --label "Morning"` |
-| `sw start` | Start stopwatch | `sw start` |
-| `sw pause` | Pause stopwatch | `sw pause` |
-| `sw lap` | Record lap time | `sw lap` |
-| `sw reset` | Reset stopwatch | `sw reset` |
-| `sw show` | Show current time | `sw show` |
+### Time
 
-###  Configuration
-| Command | Description | Example |
-|---------|-------------|---------|
-| `settings` | Interactive settings UI | `settings` |
-| `edit <file>` | Edit file in built-in editor | `edit config.txt` |
+| Command | Description |
+| --- | --- |
+| `now` | Show current local time. |
+| `time` | Show the configured ASCII clock. |
+| `world` | Show saved time zones. |
+| `tz list` | List saved time zones. |
+| `tz add <IANA>` | Add a time zone such as `Europe/London`. |
+| `tz remove <IANA>` | Remove a saved time zone. |
+| `alarm list` | List alarms. |
+| `alarm add "<HH:MM>" --label "Name"` | Add an alarm. |
+| `alarm remove <id>` | Remove an alarm by ID. |
+| `sw start`, `sw pause`, `sw lap`, `sw reset`, `sw show` | Stopwatch controls. |
 
-### Shell Features
-| Command | Description | Example |
-|---------|-------------|---------|
-| `cd <dir>` | Change directory (native) | `cd ~/projects` |
-| Any OS command | Falls back to system shell | `ls`, `git status`, etc. |
-| `help` | Show available commands | `help` |
-| `exit` or `quit` | Exit TruShell | `exit` |
+### Shell And Settings
 
-## Customization
+| Command | Description |
+| --- | --- |
+| `settings` | Change persisted preferences. |
+| `edit <file>` | Open the built-in Textual editor. |
+| `cd <dir>` | Change TruShell's current directory. |
+| `help` | Print command help. |
+| `exit` or `quit` | Leave the REPL. |
 
-Configure your experience with the `settings` command:
+Unrecognized commands are executed directly through the host OS without shell
+operator expansion. Commands containing pipes, redirects, or chained operators
+are rejected for now because they need a proper parser before they can be passed
+through safely.
 
-```bash
-trushell ❯ settings
-```
+## Storage
 
-Adjust:
-- **Clock style** - Choose ASCII art format
-- **Time template** - Customize time display format
-- **Joke character** - Switch between cow, trex, dragon, etc.
-- **Sound effects** - Enable/disable joke sounds
+Todos and application preferences are stored in SQLite under the platform's user
+data directory. Older JSON state files are migrated into SQLite on first load and
+renamed to a `.bak` file so the original settings are not silently discarded.
 
-Settings are stored persistently in your user data directory.
+## Architecture Notes
 
-## Architecture
+TruShell uses a few terminal libraries, each for a narrow job:
 
-TruShell is built with a modular architecture:
+- Typer owns command parsing and CLI entry points.
+- Rich owns formatted terminal output such as tables and styled status text.
+- Textual is used only for the full-screen editor, where a widget toolkit is
+  more appropriate than line-by-line terminal output.
 
-```
+The main modules are:
+
+```text
 trushell/
-├── cli.py              # CLI entrypoint & command routing
-├── project.py          # Interactive shell REPL loop
-├── todocli.py          # Todo management commands
-├── pyfunny.py          # Jokes & ASCII art
-├── settings.py         # Persistent configuration
-├── database.py         # SQLite storage layer
-└── chronoterm/         # Time utilities
-    ├── shell.py        # ChronoTerm command handler
-    ├── state.py        # State management
-    └── sounds/         # Sound effect files
+  cli.py                 direct CLI commands
+  project.py             interactive REPL and host-command fallback
+  todocli.py             todo commands
+  database.py            SQLite connection and persistence helpers
+  settings.py            prompt-based preference editor
+  pyfunny.py             jokes, cowsay rendering, and sound selection
+  chronoterm/
+    shell.py             time-related commands
+    state.py             SQLite-backed app state with JSON migration
+    alarms.py            alarm scheduling
+    timezones.py         world clock helpers
+    stopwatch.py         stopwatch state
+    sound.py             platform-specific audio fallback
 ```
 
-**Key Design Principles:**
-- **SQLite-backed storage** - Todos and settings persist across sessions
-- **Platform-safe paths** - Uses OS-specific app data directories
-- **Native fallback** - Unrecognized commands pass through to system shell
-- **Textual UI** - Modern terminal UI framework for settings & editor
+## Development
 
-##  TruShell vs Traditional Shells
-
-| Feature | Bash/Zsh/Fish | TruShell |
-|---------|---------------|----------|
-| Task Management | External tools needed | Built-in |
-| Time Utilities | Manual setup | World clocks, alarms, stopwatch |
-| Productivity Focus | General purpose | Optimized for workflow |
-| Fun Breaks | None | Jokes with ASCII art |
-| Learning Curve |  Moderate-High | Low (familiar commands) |
-| Extensibility | Plugins/scripts | Python-based |
-
-**TruShell complements your existing shell**—use it for productivity tasks while keeping bash/zsh for system administration.
-
-## ️ Development
-
-### Prerequisites
-- Python 3.10+
-- [Poetry](https://python-poetry.org/) or pip
-
-### Setup
 ```bash
-git clone https://github.com/AkshajSinghal/trushell.git
-cd at-office-shell
-poetry install
-# or
-pip install -e .
-```
-
-### Run Tests
-```bash
+pip install -e ".[dev]"
 pytest tests/
 ```
 
-### Build Package
-```bash
-python -m build
-twine upload dist/*
-```
-
-## Contributing
-
-Contributions are welcome! Please:
-1. Read [CONTRIBUTING.md](CONTRIBUTING.md)
-2. Check existing [issues](https://github.com/AkshajSinghal/trushell/issues)
-3. Fork and create a pull request
-
-See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for community guidelines.
-
-## Dependencies
-
-- **[Typer](https://typer.tiangolo.com/)** - Modern CLI framework
-- **[Textual](https://textual.textualize.io/)** - Terminal UI toolkit
-- **[pyjokes](https://github.com/pyjokes/pyjokes)** - Joke library
-- **[cowsay](https://github.com/vaichidrewar/cowsay-python)** - ASCII art
-- **[playsound](https://github.com/TaylorSMarks/playsound)** - Audio playback
-- **SQLite3** - Built-in database (no extra install needed)
+The package metadata is in `pyproject.toml`; the runtime version exported by
+`trushell.__version__` should be kept in sync with it.
 
 ## License
 
-Apache 2.0 - See [LICENSE](LICENSE) for details.
-
-## Acknowledgments
-
-- Inspired by the Unix philosophy of small, composable tools
-- Built with love for the Linux community
-- Thanks to all contributors and early testers
-
----
-
-## 🌟 Star this repo if TruShell boosts your productivity!
-
-[![GitHub stars](https://img.shields.io/github/stars/AkshajSinghal/trushell?style=social)](https://github.com/AkshajSinghal/at-office-shell)
----
-
-**Made for Linux users who value productivity and fun.**
+Apache-2.0. See [LICENSE](LICENSE) for details.
